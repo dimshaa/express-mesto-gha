@@ -2,7 +2,8 @@ const Card = require('../models/card');
 
 const getCards = (req, res) => {
   Card.find({})
-    .populate('owner')
+    .populate('owner', 'name about')
+    .populate('likes', 'name')
     .then((cards) => {
       res.send({ data: cards });
     })
@@ -33,8 +34,38 @@ const deleteCard = (req, res) => {
     });
 };
 
+const likeCard = (req, res) => {
+  Card.findByIdAndUpdate(
+    req.params.cardId,
+    { $addToSet: { likes: req.user._id } },
+    { new: true },
+  )
+    .then((card) => {
+      res.send({ data: card });
+    })
+    .catch((err) => {
+      res.status(500).send({ message: `oh! it's ${err}` });
+    });
+};
+
+const dislikeCard = (req, res) => {
+  Card.findByIdAndUpdate(
+    req.params.cardId,
+    { $pull: { likes: req.user._id } },
+    { new: true },
+  )
+    .then((card) => {
+      res.send({ data: card });
+    })
+    .catch((err) => {
+      res.status(500).send({ message: `oh! it's ${err}` });
+    });
+};
+
 module.exports = {
   getCards,
   createCard,
   deleteCard,
+  likeCard,
+  dislikeCard,
 };
