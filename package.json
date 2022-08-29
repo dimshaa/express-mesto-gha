@@ -6,14 +6,13 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "lint": "npx eslint .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "npx eslint ."
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dimshaa/express-mesto-gha.git"
   },
-  "author": "",
+  "author": "dm sh",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/dimshaa/express-mesto-gha/issues"
