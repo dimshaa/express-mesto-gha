@@ -25,6 +25,10 @@ const getUserById = (req, res) => {
       res.send({ data: user });
     })
     .catch((err) => {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
+        res.status(BAD_REQUEST_ERROR).send({ message: `It's ${res.statusCode} - ${err}` });
+        return;
+      }
       res.status(INTERNAL_SERVER_ERROR).send({ message: `It's ${res.statusCode} - ${err}` });
     });
 };

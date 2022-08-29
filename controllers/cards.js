@@ -43,6 +43,10 @@ const deleteCard = (req, res) => {
       res.send({ data: card });
     })
     .catch((err) => {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
+        res.status(BAD_REQUEST_ERROR).send({ message: `It's ${res.statusCode} - ${err}` });
+        return;
+      }
       res.status(INTERNAL_SERVER_ERROR).send({ message: `It's ${res.statusCode} - ${err}` });
     });
 };
@@ -61,7 +65,7 @@ const likeCard = (req, res) => {
       res.send({ data: card });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
         res.status(BAD_REQUEST_ERROR).send({ message: `It's ${res.statusCode} - ${err}` });
         return;
       }
@@ -83,7 +87,7 @@ const dislikeCard = (req, res) => {
       res.send({ data: card });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
         res.status(BAD_REQUEST_ERROR).send({ message: `It's ${res.statusCode} - ${err}` });
         return;
       }
