@@ -1,4 +1,9 @@
 const Card = require('../models/card');
+const {
+  BAD_REQUEST_ERROR,
+  INTERNAL_SERVER_ERROR,
+  NOT_FOUND_ERROR,
+} = require('../utils/errors');
 
 const getCards = (req, res) => {
   Card.find({})
@@ -8,7 +13,7 @@ const getCards = (req, res) => {
       res.send({ data: cards });
     })
     .catch((err) => {
-      res.status(500).send({ message: `oh! it's ${err}` });
+      res.status(INTERNAL_SERVER_ERROR).send({ message: `It's ${res.statusCode} - ${err}` });
     });
 };
 
@@ -16,21 +21,29 @@ const createCard = (req, res) => {
   const { name, link } = req.body;
 
   Card.create({ name, link, owner: req.user._id })
-    .then((user) => {
-      res.send({ data: user });
+    .then((card) => {
+      res.send({ data: card });
     })
     .catch((err) => {
-      res.status(500).send({ message: `oh! it's ${err}` });
+      if (err.name === 'ValidationError') {
+        res.status(BAD_REQUEST_ERROR).send({ message: `It's ${res.statusCode} - ${err}` });
+        return;
+      }
+      res.status(INTERNAL_SERVER_ERROR).send({ message: `It's ${res.statusCode} - ${err}` });
     });
 };
 
 const deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
+      if (!card) {
+        res.status(NOT_FOUND_ERROR).send({ message: `It's ${res.statusCode} - such card not found` });
+        return;
+      }
       res.send({ data: card });
     })
     .catch((err) => {
-      res.status(500).send({ message: `oh! it's ${err}` });
+      res.status(INTERNAL_SERVER_ERROR).send({ message: `It's ${res.statusCode} - ${err}` });
     });
 };
 
@@ -41,10 +54,18 @@ const likeCard = (req, res) => {
     { new: true },
   )
     .then((card) => {
+      if (!card) {
+        res.status(NOT_FOUND_ERROR).send({ message: `It's ${res.statusCode} - such card not found` });
+        return;
+      }
       res.send({ data: card });
     })
     .catch((err) => {
-      res.status(500).send({ message: `oh! it's ${err}` });
+      if (err.name === 'ValidationError') {
+        res.status(BAD_REQUEST_ERROR).send({ message: `It's ${res.statusCode} - ${err}` });
+        return;
+      }
+      res.status(INTERNAL_SERVER_ERROR).send({ message: `It's ${res.statusCode} - ${err}` });
     });
 };
 
@@ -55,10 +76,18 @@ const dislikeCard = (req, res) => {
     { new: true },
   )
     .then((card) => {
+      if (!card) {
+        res.status(NOT_FOUND_ERROR).send({ message: `It's ${res.statusCode} - such card not found` });
+        return;
+      }
       res.send({ data: card });
     })
     .catch((err) => {
-      res.status(500).send({ message: `oh! it's ${err}` });
+      if (err.name === 'ValidationError') {
+        res.status(BAD_REQUEST_ERROR).send({ message: `It's ${res.statusCode} - ${err}` });
+        return;
+      }
+      res.status(INTERNAL_SERVER_ERROR).send({ message: `It's ${res.statusCode} - ${err}` });
     });
 };
 
