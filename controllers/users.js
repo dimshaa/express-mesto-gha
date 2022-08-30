@@ -11,7 +11,7 @@ const getUsers = (req, res) => {
       res.send({ data: users });
     })
     .catch((err) => {
-      res.status(INTERNAL_SERVER_ERROR).send({ message: `It's ${res.statusCode} - ${err}` });
+      res.status(INTERNAL_SERVER_ERROR).send({ message: `It's ${res.statusCode} - ${err.message}` });
     });
 };
 
@@ -25,11 +25,11 @@ const getUserById = (req, res) => {
       res.send({ data: user });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
-        res.status(BAD_REQUEST_ERROR).send({ message: `It's ${res.statusCode} - ${err}` });
+      if (err.name === 'CastError') {
+        res.status(BAD_REQUEST_ERROR).send({ message: `It's ${res.statusCode} - ${err.message}` });
         return;
       }
-      res.status(INTERNAL_SERVER_ERROR).send({ message: `It's ${res.statusCode} - ${err}` });
+      res.status(INTERNAL_SERVER_ERROR).send({ message: `It's ${res.statusCode} - ${err.message}` });
     });
 };
 
@@ -42,10 +42,10 @@ const createUser = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST_ERROR).send({ message: `It's ${res.statusCode} - ${err}` });
+        res.status(BAD_REQUEST_ERROR).send({ message: `It's ${res.statusCode} - ${err.message}` });
         return;
       }
-      res.status(INTERNAL_SERVER_ERROR).send({ message: `It's ${res.statusCode} - ${err}` });
+      res.status(INTERNAL_SERVER_ERROR).send({ message: `It's ${res.statusCode} - ${err.message}` });
     });
 };
 
@@ -69,10 +69,10 @@ const updateUserInfo = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST_ERROR).send({ message: `It's ${res.statusCode} - ${err}` });
+        res.status(BAD_REQUEST_ERROR).send({ message: `It's ${res.statusCode} - ${err.message}` });
         return;
       }
-      res.status(INTERNAL_SERVER_ERROR).send({ message: `It's ${res.statusCode} - ${err}` });
+      res.status(INTERNAL_SERVER_ERROR).send({ message: `It's ${res.statusCode} - ${err.message}` });
     });
 };
 
@@ -96,10 +96,10 @@ const updateUserAvatar = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST_ERROR).send({ message: `It's ${res.statusCode} - ${err}` });
+        res.status(BAD_REQUEST_ERROR).send({ message: `It's ${res.statusCode} - ${err.message}` });
         return;
       }
-      res.status(INTERNAL_SERVER_ERROR).send({ message: `It's ${res.statusCode} - ${err}` });
+      res.status(INTERNAL_SERVER_ERROR).send({ message: `It's ${res.statusCode} - ${err.message}` });
     });
 };
 
