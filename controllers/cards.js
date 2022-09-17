@@ -34,13 +34,16 @@ const createCard = (req, res) => {
 };
 
 const deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  Card.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
         res.status(NOT_FOUND_ERROR).send({ message: `It's ${res.statusCode} - such card not found` });
         return;
       }
-      res.send({ data: card });
+      if (card.owner._id.toString() === req.user._id) {
+        card.remove();
+        res.send({ message: 'card was successfully deleted' });
+      }
     })
     .catch((err) => {
       if (err.name === 'CastError') {

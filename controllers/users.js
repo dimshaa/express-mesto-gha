@@ -22,6 +22,24 @@ const login = (req, res) => {
     });
 };
 
+const getUserInfo = (req, res) => {
+  User.findById(req.user._id)
+    .then((user) => {
+      if (!user) {
+        res.status(NOT_FOUND_ERROR).send({ message: `It's ${res.statusCode} - such user not found` });
+        return;
+      }
+      res.send({ data: user });
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(BAD_REQUEST_ERROR).send({ message: `It's ${res.statusCode} - ${err.message}` });
+        return;
+      }
+      res.status(INTERNAL_SERVER_ERROR).send({ message: `It's ${res.statusCode} - ${err.message}` });
+    });
+};
+
 const getUsers = (req, res) => {
   User.find({})
     .then((users) => {
@@ -141,6 +159,7 @@ const updateUserAvatar = (req, res) => {
 module.exports = {
   login,
   getUsers,
+  getUserInfo,
   getUserById,
   createUser,
   updateUserInfo,

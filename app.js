@@ -17,15 +17,6 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 app.use(bodyParser.json());
 app.use(cookieParser());
 
-// user auth emulation
-// app.use((req, res, next) => {
-//   req.user = {
-//     _id: '630a4b017af1e4c56cff1c2c',
-//   };
-
-//   next();
-// });
-
 app.post('/signup', createUser);
 app.post('/signin', login);
 
