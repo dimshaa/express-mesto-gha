@@ -1,14 +1,13 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const {
-  INTERNAL_SERVER_ERROR,
-  BAD_REQUEST_ERROR,
-  NOT_FOUND_ERROR,
-  UNAUTHORIZED_ERROR,
-} = require('../utils/errors');
 
-const login = (req, res) => {
+const BadRequestError = require('../utils/errors/BadRequestError');
+const ConflictError = require('../utils/errors/ConflictError');
+const NotFoundError = require('../utils/errors/NotFoundError');
+const UnauthorizedError = require('../utils/errors/UnauthorizedError');
+
+const login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
@@ -17,58 +16,51 @@ const login = (req, res) => {
 
       res.cookie('jwt', token, { maxAge: 604800000, httpOnly: true }).send({ data: user });
     })
-    .catch((err) => {
-      res.status(UNAUTHORIZED_ERROR).send({ message: `It's ${res.statusCode} - ${err.message}` });
+    .catch(() => {
+      next(new UnauthorizedError('Wrong email or password'));
     });
 };
 
-const getUserInfo = (req, res) => {
+const getUserInfo = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (!user) {
-        res.status(NOT_FOUND_ERROR).send({ message: `It's ${res.statusCode} - such user not found` });
-        return;
+        next(new NotFoundError('User not found'));
       }
       res.send({ data: user });
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(BAD_REQUEST_ERROR).send({ message: `It's ${res.statusCode} - ${err.message}` });
-        return;
-      }
-      res.status(INTERNAL_SERVER_ERROR).send({ message: `It's ${res.statusCode} - ${err.message}` });
+      next(err);
     });
 };
 
-const getUsers = (req, res) => {
+const getUsers = (req, res, next) => {
   User.find({})
     .then((users) => {
       res.send({ data: users });
     })
     .catch((err) => {
-      res.status(INTERNAL_SERVER_ERROR).send({ message: `It's ${res.statusCode} - ${err.message}` });
+      next(err);
     });
 };
 
-const getUserById = (req, res) => {
+const getUserById = (req, res, next) => {
   User.findById(req.params.id)
     .then((user) => {
       if (!user) {
-        res.status(NOT_FOUND_ERROR).send({ message: `It's ${res.statusCode} - such user not found` });
-        return;
+        next(new NotFoundError('User not found'));
       }
       res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(BAD_REQUEST_ERROR).send({ message: `It's ${res.statusCode} - ${err.message}` });
-        return;
+        next(new BadRequestError(err.message));
       }
-      res.status(INTERNAL_SERVER_ERROR).send({ message: `It's ${res.statusCode} - ${err.message}` });
+      next(err);
     });
 };
 
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const {
     name,
     about,
@@ -91,18 +83,20 @@ const createUser = (req, res) => {
         })
         .catch((err) => {
           if (err.name === 'ValidationError') {
-            res.status(BAD_REQUEST_ERROR).send({ message: `It's ${res.statusCode} - ${err.message}` });
-            return;
+            next(new BadRequestError(err.message));
           }
-          res.status(INTERNAL_SERVER_ERROR).send({ message: `It's ${res.statusCode} - ${err.message}` });
+          if (err.code === 11000) {
+            next(new ConflictError('User already exists'));
+          }
+          next(err);
         });
     })
     .catch((err) => {
-      res.status(INTERNAL_SERVER_ERROR).send({ message: `It's ${res.statusCode} - ${err.message}` });
+      next(err);
     });
 };
 
-const updateUserInfo = (req, res) => {
+const updateUserInfo = (req, res, next) => {
   const { name, about } = req.body;
 
   User.findByIdAndUpdate(
@@ -115,21 +109,19 @@ const updateUserInfo = (req, res) => {
   )
     .then((user) => {
       if (!user) {
-        res.status(NOT_FOUND_ERROR).send({ message: `It's ${res.statusCode} - such user not found` });
-        return;
+        next(new NotFoundError('User not found'));
       }
       res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST_ERROR).send({ message: `It's ${res.statusCode} - ${err.message}` });
-        return;
+        next(new BadRequestError(err.messge));
       }
-      res.status(INTERNAL_SERVER_ERROR).send({ message: `It's ${res.statusCode} - ${err.message}` });
+      next(err);
     });
 };
 
-const updateUserAvatar = (req, res) => {
+const updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(
@@ -142,17 +134,15 @@ const updateUserAvatar = (req, res) => {
   )
     .then((user) => {
       if (!user) {
-        res.status(NOT_FOUND_ERROR).send({ message: `It's ${res.statusCode} - such user not found` });
-        return;
+        next(new NotFoundError('User not found'));
       }
       res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST_ERROR).send({ message: `It's ${res.statusCode} - ${err.message}` });
-        return;
+        next(new BadRequestError(err.messge));
       }
-      res.status(INTERNAL_SERVER_ERROR).send({ message: `It's ${res.statusCode} - ${err.message}` });
+      next(err);
     });
 };
 
