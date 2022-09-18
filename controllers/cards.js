@@ -1,6 +1,7 @@
 const Card = require('../models/card');
 const BadRequestError = require('../utils/errors/BadRequestError');
 const NotFoundError = require('../utils/errors/NotFoundError');
+const ForbiddenError = require('../utils/errors/ForbiddenError');
 
 const getCards = (req, res, next) => {
   Card.find({})
@@ -34,10 +35,13 @@ const deleteCard = (req, res, next) => {
     .then((card) => {
       if (!card) {
         next(new NotFoundError('Card not found'));
+        return;
       }
       if (card.owner._id.toString() === req.user._id) {
         card.remove();
         res.send({ message: 'Card was successfully deleted' });
+      } else {
+        next(new ForbiddenError('Not allowed'));
       }
     })
     .catch((err) => {
