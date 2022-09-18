@@ -1,7 +1,8 @@
-/* eslint-disable func-names */
+/* eslint-disable func-names, no-useless-escape */
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
+const BadRequestError = require('../utils/errors/BadRequestError');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -19,6 +20,7 @@ const userSchema = new mongoose.Schema({
   avatar: {
     type: String,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+    validate: [/^https?:\/\/(www\.)?[\w\d\-]+\.[\w\d\-\._~:\/\?#\[\]@!\$&'\(\)\*\+,;=]{2,}#?/, function () { return new BadRequestError('invalid URL'); }],
   },
   email: {
     type: String,

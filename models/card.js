@@ -1,4 +1,6 @@
+/* eslint-disable func-names, no-useless-escape */
 const mongoose = require('mongoose');
+const BadRequestError = require('../utils/errors/BadRequestError');
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -10,6 +12,7 @@ const cardSchema = new mongoose.Schema({
   link: {
     type: String,
     required: true,
+    validate: [/^https?:\/\/(www\.)?[\w\d\-]+\.[\w\d\-\._~:\/\?#\[\]@!\$&'\(\)\*\+,;=]{2,}#?/, function () { return new BadRequestError('invalid URL'); }],
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
