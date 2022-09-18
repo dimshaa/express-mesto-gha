@@ -14,7 +14,7 @@ const login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign({ _id: user.id }, 'some-secret-key', { expiresIn: '7d' });
 
-      res.cookie('jwt', token, { maxAge: 604800000, httpOnly: true }).send({ data: user });
+      res.cookie('jwt', token, { maxAge: 604800000, httpOnly: true }).send({ data: user.toJSON() });
     })
     .catch(() => {
       next(new UnauthorizedError('Wrong email or password'));
@@ -26,6 +26,7 @@ const getUserInfo = (req, res, next) => {
     .then((user) => {
       if (!user) {
         next(new NotFoundError('User not found'));
+        return;
       }
       res.send({ data: user });
     })
@@ -49,6 +50,7 @@ const getUserById = (req, res, next) => {
     .then((user) => {
       if (!user) {
         next(new NotFoundError('User not found'));
+        return;
       }
       res.send({ data: user });
     })
@@ -79,7 +81,7 @@ const createUser = (req, res, next) => {
         password: passwordHash,
       })
         .then((user) => {
-          res.send({ data: user });
+          res.send({ data: user.toJSON() });
         })
         .catch((err) => {
           if (err.name === 'ValidationError') {
@@ -110,6 +112,7 @@ const updateUserInfo = (req, res, next) => {
     .then((user) => {
       if (!user) {
         next(new NotFoundError('User not found'));
+        return;
       }
       res.send({ data: user });
     })
@@ -135,6 +138,7 @@ const updateUserAvatar = (req, res, next) => {
     .then((user) => {
       if (!user) {
         next(new NotFoundError('User not found'));
+        return;
       }
       res.send({ data: user });
     })

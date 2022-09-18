@@ -1,4 +1,7 @@
+/* eslint-disable no-useless-escape */
 const { celebrate, Joi } = require('celebrate');
+
+const urlRegex = /^https?:\/\/(www\.)?[\w\d\-]+\.[\w\d\-\._~:\/\?#\[\]@!\$&'\(\)\*\+,;=]{2,}#?/;
 
 const checkSignIn = celebrate({
   body: Joi.object().keys({
@@ -11,7 +14,7 @@ const checkSignUp = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().uri(),
+    avatar: Joi.string().regex(urlRegex),
     email: Joi.string().required().email(),
     password: Joi.string().required(),
   }),
@@ -26,7 +29,7 @@ const checkUserUpdate = celebrate({
 
 const checkAvatarUpdate = celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().uri(),
+    avatar: Joi.string().regex(urlRegex),
   }),
 });
 
@@ -38,8 +41,8 @@ const checkUserId = celebrate({
 
 const checkCardData = celebrate({
   body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
-    link: Joi.string().uri(),
+    name: Joi.string().required().min(2).max(30),
+    link: Joi.string().required().regex(urlRegex),
   }),
 });
 

@@ -61,6 +61,7 @@ const likeCard = (req, res, next) => {
     .then((card) => {
       if (!card) {
         next(new NotFoundError('Card not found'));
+        return;
       }
       res.send({ data: card });
     })
@@ -81,6 +82,7 @@ const dislikeCard = (req, res, next) => {
     .then((card) => {
       if (!card) {
         next(new NotFoundError('Card not found'));
+        return;
       }
       res.send({ data: card });
     })
