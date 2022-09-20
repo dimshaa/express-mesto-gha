@@ -24,7 +24,8 @@ const createCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError(err.message));
+        next(new BadRequestError('Incorrect data'));
+        return;
       }
       next(err);
     });
@@ -38,15 +39,18 @@ const deleteCard = (req, res, next) => {
         return;
       }
       if (card.owner._id.toString() === req.user._id) {
-        card.remove();
-        res.send({ message: 'Card was successfully deleted' });
+        card.remove()
+          .then(() => {
+            res.send({ message: 'Card was successfully deleted' });
+          });
       } else {
         next(new ForbiddenError('Not allowed'));
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError(err.message));
+        next(new BadRequestError('Incorrect data'));
+        return;
       }
       next(err);
     });
@@ -67,7 +71,8 @@ const likeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError(err.message));
+        next(new BadRequestError('Incorrect data'));
+        return;
       }
       next(err);
     });
@@ -88,7 +93,8 @@ const dislikeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError(err.message));
+        next(new BadRequestError('Incorrect data'));
+        return;
       }
       next(err);
     });

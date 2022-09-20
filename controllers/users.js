@@ -56,7 +56,8 @@ const getUserById = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError(err.message));
+        next(new BadRequestError('Incorrect data'));
+        return;
       }
       next(err);
     });
@@ -85,10 +86,12 @@ const createUser = (req, res, next) => {
         })
         .catch((err) => {
           if (err.name === 'ValidationError') {
-            next(new BadRequestError(err.message));
+            next(new BadRequestError('Incorrect data'));
+            return;
           }
           if (err.code === 11000) {
             next(new ConflictError('User already exists'));
+            return;
           }
           next(err);
         });
@@ -118,7 +121,8 @@ const updateUserInfo = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError(err.message));
+        next(new BadRequestError('Incorrect data'));
+        return;
       }
       next(err);
     });
@@ -144,7 +148,8 @@ const updateUserAvatar = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError(err.message));
+        next(new BadRequestError('Incorrect data'));
+        return;
       }
       next(err);
     });
