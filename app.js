@@ -8,6 +8,7 @@ const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const { errorHandler } = require('./middlewares/errorHandler');
 const { checkSignIn, checkSignUp } = require('./middlewares/validation');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const { PORT = 3000 } = process.env;
 
@@ -20,6 +21,8 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 app.use(bodyParser.json());
 app.use(cookieParser());
 
+app.use(requestLogger);
+
 app.post('/signup', checkSignUp, createUser);
 app.post('/signin', checkSignIn, login);
 
@@ -28,6 +31,8 @@ app.use(auth);
 app.use('/', require('./routes/users'));
 app.use('/', require('./routes/cards'));
 app.use('/', require('./routes/notFound'));
+
+app.use(errorLogger);
 
 app.use(errors());
 app.use(errorHandler);
